@@ -86,8 +86,9 @@
 - [x] 创建项目规划目录。
 - [x] 创建 `task_plan.md`、`findings.md`、`progress.md`。
 - [x] 记录当前需求、约束、领域画像和初步技术路线。
-- [ ] 用户确认初版计划是否符合预期。
-- **状态：** in_progress
+- [x] 用户确认初版计划并要求开始开发。
+- [x] 创建 GitHub 远程仓库 `ForeverHYX/daily-arxiv-recommender` 并推送。
+- **状态：** complete
 
 ### 阶段 2：上游项目审计与改造范围确认
 - [ ] Fork 或 clone `daily-arXiv-ai-enhanced` 到本地工作区。
@@ -116,19 +117,19 @@
 - **状态：** pending
 
 ### 阶段 5：GitHub Pages 反馈体验
-- [ ] 在论文卡片中加入喜欢/不喜欢按钮。
-- [ ] 增加 `feedback.html`，支持从邮件或页面记录反馈。
-- [ ] 反馈成功后显示简洁确认和返回链接。
+- [x] 在论文卡片中加入喜欢/不喜欢按钮。
+- [x] 增加 `feedback.html`，支持从邮件或页面记录反馈。
+- [x] 反馈成功后显示简洁确认和返回链接。
 - [ ] 保留现有关键词/作者设置页，并考虑导入到推荐画像。
-- **状态：** pending
+- **状态：** in_progress
 
 ### 阶段 6：邮件推送
 - [ ] 选择 SMTP 服务和邮件模板。
 - [ ] 在 GitHub Secrets 中配置邮箱凭据。
-- [ ] 生成按栏目分组的 HTML 邮件。
-- [ ] 每篇论文包含 arXiv、PDF、GitHub Pages 详情、喜欢、不喜欢链接。
+- [x] 生成按栏目分组的 HTML 邮件。
+- [x] 每篇论文包含 GitHub Pages 详情、喜欢、不喜欢链接。
 - [ ] 添加失败重试和空推荐处理。
-- **状态：** pending
+- **状态：** in_progress
 
 ### 阶段 7：推荐学习闭环
 - [ ] 将喜欢/不喜欢反馈转换为兴趣画像。

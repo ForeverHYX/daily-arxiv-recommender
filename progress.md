@@ -50,7 +50,7 @@
   - 更新 GitHub Actions 默认 Pages URL 为 `daily-arxiv-recommender`。
   - 使用 TDD 增加配置化兴趣画像测试。
   - 本地文件夹已从 `agentic-arch-paper-recommender` 更名为 `daily-arxiv-recommender`。
-  - GitHub 远程仓库重命名普通请求连接失败；提权重试被审批系统拒绝，需要用户明确批准后继续执行。
+  - GitHub 远程仓库重命名普通请求连接失败；随后创建目标名新仓库并将本地 `origin` 切换过去。
 - 创建/修改的文件：
   - `config/interests.json`
   - `paper_recommender/domain.py`
@@ -67,10 +67,10 @@
 ### 当前仓库命名状态
 - 本地路径：`/Users/foreverhyx/daily-arxiv-recommender`
 - 期望远程仓库名：`ForeverHYX/daily-arxiv-recommender`
-- 当前远程仓库名：`ForeverHYX/agentic-arch-paper-recommender`
-- 待用户明确批准后执行：
-  - `gh repo rename daily-arxiv-recommender --repo ForeverHYX/agentic-arch-paper-recommender --yes`
-  - `git remote set-url origin git@github.com:ForeverHYX/daily-arxiv-recommender.git`
+- 当前远程仓库名：`ForeverHYX/daily-arxiv-recommender`
+- 当前远程 URL：`git@github.com:ForeverHYX/daily-arxiv-recommender.git`
+- 验证：`gh repo view ForeverHYX/daily-arxiv-recommender` 返回 public 仓库，默认分支为 `main`。
+- 备注：旧仓库 `ForeverHYX/agentic-arch-paper-recommender` 仍存在，因为 GitHub API rename/PATCH 调用失败；当前代码已同步到新仓库。
 
 ## 五问重启检查
 | 问题 | 答案 |
