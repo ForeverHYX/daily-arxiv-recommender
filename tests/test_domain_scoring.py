@@ -105,7 +105,24 @@ class DomainScoringTests(unittest.TestCase):
 
         self.assertEqual([item.paper.paper_id for item in ranked], ["agentic", "hpc"])
 
+    def test_short_keywords_do_not_match_inside_longer_words(self):
+        paper = Paper(
+            paper_id="codesign",
+            title="Compiler Architecture Co-design for RISC-V Custom Accelerators",
+            abstract=(
+                "The method performs full-stack co-design across MLIR, runtime scheduling, "
+                "workload mapping, and a RISC-V custom extension."
+            ),
+            authors=["G. Compiler"],
+            categories=["cs.PL", "cs.AR"],
+        )
+
+        result = classify_paper(paper)
+
+        self.assertIn("full_stack_codesign", result.sections)
+        self.assertNotIn("hpc_cross_over", result.sections)
+        self.assertFalse(any(match == "hpc_cross_over:mpi" for match in result.positive_matches))
+
 
 if __name__ == "__main__":
     unittest.main()
-

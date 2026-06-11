@@ -1,0 +1,129 @@
+{
+  "name": "Agentic Architecture and Full-stack Co-design",
+  "core_categories": ["cs.AR", "cs.PF", "cs.DC", "cs.PL"],
+  "expansion_categories": ["cs.AI", "cs.LG"],
+  "expansion_accept_score": 4.0,
+  "sections": [
+    {
+      "id": "agentic_architecture",
+      "label": "Agentic Architecture / Auto-DSE",
+      "weight": 4.0,
+      "keywords": [
+        "agentic ai for computer architecture",
+        "agentic ai-driven",
+        "agentic ai driven",
+        "llm-driven architecture",
+        "llm driven architecture",
+        "architecture idea factory",
+        "architecture design space exploration",
+        "microarchitecture design space exploration",
+        "computer architecture discovery",
+        "automated architecture discovery",
+        "hardware design agent",
+        "simulator-guided design space exploration"
+      ]
+    },
+    {
+      "id": "full_stack_codesign",
+      "label": "Full-stack HW/SW Co-design",
+      "weight": 3.5,
+      "keywords": [
+        "software hardware co-design",
+        "hardware software co-optimization",
+        "full-stack co-design",
+        "compiler architecture co-design",
+        "isa extension",
+        "risc-v custom extension",
+        "accelerator compiler",
+        "domain-specific accelerator",
+        "domain specific accelerator",
+        "workload mapping",
+        "hardware-aware",
+        "mlir",
+        "circt",
+        "tvm",
+        "triton",
+        "xla"
+      ]
+    },
+    {
+      "id": "microarchitecture_simulators",
+      "label": "CPU/GPU Microarchitecture and Simulators",
+      "weight": 3.0,
+      "keywords": [
+        "microarchitecture",
+        "cache replacement",
+        "data prefetcher",
+        "branch predictor",
+        "cycle-accurate simulation",
+        "cycle accurate simulation",
+        "cache hierarchy",
+        "cache coherence",
+        "memory hierarchy",
+        "warp scheduling",
+        "simt",
+        "gem5",
+        "champsim",
+        "sniper",
+        "sst",
+        "gpgpu-sim",
+        "accel-sim",
+        "ramulator"
+      ]
+    },
+    {
+      "id": "hpc_cross_over",
+      "label": "HPC x Architecture / Compiler / Runtime",
+      "weight": 2.0,
+      "keywords": [
+        "high performance computing",
+        "hpc",
+        "exascale",
+        "mpi",
+        "openmp",
+        "cuda",
+        "rocm",
+        "sycl",
+        "kokkos",
+        "performance portability",
+        "roofline",
+        "numa",
+        "communication-avoiding",
+        "sparse linear algebra",
+        "memory bandwidth",
+        "interconnect"
+      ]
+    }
+  ],
+  "negative_rules": [
+    {
+      "id": "generic-ai-agent-noise",
+      "penalty": 6.0,
+      "keywords": [
+        "rag agent",
+        "web task",
+        "browser task",
+        "multi-agent software framework",
+        "software framework",
+        "retrieval augmented generation",
+        "tool use"
+      ]
+    },
+    {
+      "id": "generic-nas-noise",
+      "penalty": 5.0,
+      "keywords": ["neural architecture search", " nas "],
+      "recovery_keywords": [
+        "hardware-aware",
+        "hardware aware",
+        "accelerator",
+        "fpga",
+        "compiler",
+        "co-design",
+        "codesign",
+        "risc-v"
+      ]
+    }
+  ]
+}
+

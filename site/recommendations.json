@@ -1,0 +1,70 @@
+{
+  "run_date": "2026-06-12",
+  "profile_name": "Agentic Architecture and Full-stack Co-design",
+  "section_labels": {
+    "agentic_architecture": "Agentic Architecture / Auto-DSE",
+    "full_stack_codesign": "Full-stack HW/SW Co-design",
+    "microarchitecture_simulators": "CPU/GPU Microarchitecture and Simulators",
+    "hpc_cross_over": "HPC x Architecture / Compiler / Runtime"
+  },
+  "count": 2,
+  "recommendations": [
+    {
+      "rank": 1,
+      "paper_id": "agentic-sample",
+      "title": "Agentic AI-Driven Microarchitecture Design Space Exploration",
+      "abstract": "An LLM-driven hardware design agent explores cache replacement policy and data prefetcher candidates through cycle-accurate simulation with gem5 for computer architecture discovery.",
+      "authors": [
+        "Sample Architect"
+      ],
+      "categories": [
+        "cs.AI",
+        "cs.AR"
+      ],
+      "score": 35.0,
+      "sections": [
+        "agentic_architecture",
+        "microarchitecture_simulators"
+      ],
+      "positive_matches": [
+        "agentic_architecture:agentic ai-driven",
+        "agentic_architecture:architecture design space exploration",
+        "agentic_architecture:microarchitecture design space exploration",
+        "agentic_architecture:computer architecture discovery",
+        "agentic_architecture:hardware design agent",
+        "microarchitecture_simulators:microarchitecture",
+        "microarchitecture_simulators:cache replacement",
+        "microarchitecture_simulators:data prefetcher",
+        "microarchitecture_simulators:cycle-accurate simulation",
+        "microarchitecture_simulators:gem5"
+      ],
+      "negative_matches": []
+    },
+    {
+      "rank": 2,
+      "paper_id": "codesign-sample",
+      "title": "Compiler Architecture Co-design for RISC-V Custom Accelerators",
+      "abstract": "The method performs full-stack co-design across MLIR, runtime scheduling, workload mapping, and a RISC-V custom extension for a domain-specific accelerator.",
+      "authors": [
+        "Sample Codesign"
+      ],
+      "categories": [
+        "cs.PL",
+        "cs.AR"
+      ],
+      "score": 21.0,
+      "sections": [
+        "full_stack_codesign"
+      ],
+      "positive_matches": [
+        "full_stack_codesign:full-stack co-design",
+        "full_stack_codesign:compiler architecture co-design",
+        "full_stack_codesign:risc-v custom extension",
+        "full_stack_codesign:domain-specific accelerator",
+        "full_stack_codesign:workload mapping",
+        "full_stack_codesign:mlir"
+      ],
+      "negative_matches": []
+    }
+  ]
+}

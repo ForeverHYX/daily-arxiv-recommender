@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from paper_recommender.domain import Paper, rank_papers
+from paper_recommender.domain import InterestProfile, Paper, load_interest_profile, rank_papers
 
 
 def paper_from_record(record: dict[str, Any]) -> Paper:
@@ -39,9 +39,13 @@ def load_papers_jsonl(path: str | Path) -> list[Paper]:
 
 
 def recommendation_payload(
-    papers: list[Paper], run_date: str | None = None, limit: int | None = None
+    papers: list[Paper],
+    run_date: str | None = None,
+    limit: int | None = None,
+    profile: InterestProfile | None = None,
 ) -> dict[str, Any]:
-    ranked = rank_papers(papers)
+    resolved_profile = profile or load_interest_profile()
+    ranked = rank_papers(papers, profile=resolved_profile)
     if limit is not None:
         ranked = ranked[:limit]
 
@@ -66,15 +70,21 @@ def recommendation_payload(
     resolved_run_date = run_date or date.today().isoformat()
     return {
         "run_date": resolved_run_date,
+        "profile_name": resolved_profile.name,
+        "section_labels": resolved_profile.section_labels,
         "count": len(recommendations),
         "recommendations": recommendations,
     }
 
 
 def write_recommendations_json(
-    papers: list[Paper], output_path: str | Path, run_date: str | None = None, limit: int | None = None
+    papers: list[Paper],
+    output_path: str | Path,
+    run_date: str | None = None,
+    limit: int | None = None,
+    profile: InterestProfile | None = None,
 ) -> dict[str, Any]:
-    payload = recommendation_payload(papers, run_date=run_date, limit=limit)
+    payload = recommendation_payload(papers, run_date=run_date, limit=limit, profile=profile)
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -87,14 +97,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, help="Output recommendation JSON path.")
     parser.add_argument("--run-date", default=None, help="Run date to store in output.")
     parser.add_argument("--limit", type=int, default=None, help="Maximum recommendations to emit.")
+    parser.add_argument("--profile", default=None, help="Interest profile JSON path.")
     args = parser.parse_args(argv)
 
     papers = load_papers_jsonl(args.input)
+    profile = load_interest_profile(args.profile) if args.profile else None
     payload = write_recommendations_json(
         papers,
         output_path=args.output,
         run_date=args.run_date,
         limit=args.limit,
+        profile=profile,
     )
     print(f"Wrote {payload['count']} recommendations to {args.output}")
     return 0
@@ -140,4 +153,3 @@ def _categories_from_record(value: Any) -> list[str]:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

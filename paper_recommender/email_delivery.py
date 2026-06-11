@@ -53,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sender = _required_env("EMAIL_SENDER")
     receiver = _required_env("EMAIL_RECEIVER")
-    subject = args.subject or f"Daily Architecture Paper Recommendations - {payload.get('run_date', '')}"
+    subject = args.subject or f"Daily arXiv Recommendations - {payload.get('run_date', '')}"
     message = build_email_message(subject=subject, sender=sender, receiver=receiver, html=html)
 
     smtp_host = _required_env("SMTP_HOST")
@@ -82,4 +82,3 @@ def _required_env(name: str) -> str:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

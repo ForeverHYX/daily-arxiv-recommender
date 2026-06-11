@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from paper_recommender.domain import InterestProfile, SectionRule
 from paper_recommender.pipeline import (
     load_papers_jsonl,
     paper_from_record,
@@ -82,7 +83,35 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(payload["recommendations"][0]["paper_id"], "arch")
         self.assertIn("agentic_architecture", payload["recommendations"][0]["sections"])
 
+    def test_recommendation_payload_includes_profile_metadata(self):
+        profile = InterestProfile(
+            name="Quantum Systems",
+            core_categories=frozenset({"quant-ph"}),
+            expansion_categories=frozenset({"cs.LG"}),
+            sections=(
+                SectionRule(
+                    id="quantum_control",
+                    label="Quantum Control",
+                    weight=5.0,
+                    keywords=("quantum control",),
+                ),
+            ),
+        )
+        paper = paper_from_record(
+            {
+                "paper_id": "quantum",
+                "title": "Learning for Quantum Control",
+                "abstract": "Quantum control with pulse optimization.",
+                "authors": ["Q. Researcher"],
+                "categories": ["cs.LG"],
+            }
+        )
+
+        payload = recommendation_payload([paper], "2026-06-12", profile=profile)
+
+        self.assertEqual(payload["profile_name"], "Quantum Systems")
+        self.assertEqual(payload["section_labels"]["quantum_control"], "Quantum Control")
+
 
 if __name__ == "__main__":
     unittest.main()
-

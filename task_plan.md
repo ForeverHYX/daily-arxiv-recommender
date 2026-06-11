@@ -1,7 +1,7 @@
-# 任务计划：Agentic Architecture 论文推荐系统
+# 任务计划：Daily arXiv Recommender
 
 ## 目标
-基于 `daily-arXiv-ai-enhanced` 思路，构建一个不依赖自有服务器的个性化论文推荐系统：保留 GitHub Pages 展示，增加邮件推送和喜欢/不喜欢反馈，让推荐逐步贴近用户在 agentic computer architecture、自动设计空间探索、软硬件协同、CPU/GPU 微架构、模拟器和 HPC 交叉方向的兴趣。
+基于 `daily-arXiv-ai-enhanced` 思路，构建一个不依赖自有服务器、可通过独立兴趣配置泛化到不同领域的每日 arXiv 推荐系统：保留 GitHub Pages 展示，增加邮件推送和喜欢/不喜欢反馈。默认兴趣配置仍聚焦 agentic computer architecture、自动设计空间探索、软硬件协同、CPU/GPU 微架构、模拟器和 HPC 交叉方向。
 
 ## 当前阶段
 阶段 1：方案确认与项目初始化
@@ -13,6 +13,7 @@
 - 使用托管存储保存反馈，初始推荐 Supabase 免费层。
 - 邮件由 GitHub Actions 定时发送，邮件内包含喜欢/不喜欢反馈入口。
 - 第一版聚焦 arXiv；Semantic Scholar、会议官网和 RSS 源作为后续增强。
+- 关键词、分类、栏目和降权规则必须通过 `config/interests.json` 独立配置，避免写死在代码中。
 
 ## 领域画像
 ### 核心兴趣
@@ -98,12 +99,13 @@
 备注：2026-06-12 首次尝试 `git clone` 和 GitHub zip archive 下载均因连接 `github.com:443` 超时失败。当前先推进自有 MVP，后续网络可用时再补做上游审计。
 
 ### 阶段 3：领域过滤和推荐画像 MVP
-- [ ] 配置核心分类和扩展分类。
-- [ ] 实现领域关键词 gate。
+- [x] 配置核心分类和扩展分类。
+- [x] 实现领域关键词 gate。
 - [ ] 建立 seed paper 列表和手动关键词权重。
-- [ ] 实现栏目分配和初版排序。
-- [ ] 添加排除词和降权逻辑。
-- **状态：** pending
+- [x] 实现栏目分配和初版排序。
+- [x] 添加排除词和降权逻辑。
+- [x] 将关键词画像抽离到 `config/interests.json`。
+- **状态：** in_progress
 
 ### 阶段 4：反馈存储
 - [ ] 创建 Supabase 项目。

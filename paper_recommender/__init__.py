@@ -1,2 +1,1 @@
-"""Agentic architecture paper recommendation utilities."""
-
+"""Daily arXiv recommendation utilities."""

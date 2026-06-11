@@ -1,13 +1,14 @@
-"""Domain filtering and rule-based scoring for architecture paper candidates."""
+"""Configurable domain filtering and rule-based scoring for paper candidates."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import json
+from pathlib import Path
 import re
 
 
-CORE_CATEGORIES = frozenset({"cs.AR", "cs.PF", "cs.DC", "cs.PL"})
-EXPANSION_CATEGORIES = frozenset({"cs.AI", "cs.LG"})
+DEFAULT_PROFILE_PATH = Path(__file__).resolve().parents[1] / "config" / "interests.json"
 
 
 @dataclass(frozen=True)
@@ -31,149 +32,88 @@ class Classification:
 
 @dataclass(frozen=True)
 class SectionRule:
-    name: str
+    id: str
+    label: str
     weight: float
     keywords: tuple[str, ...]
 
 
-SECTION_RULES = (
-    SectionRule(
-        name="agentic_architecture",
-        weight=4.0,
-        keywords=(
-            "agentic ai for computer architecture",
-            "agentic ai-driven",
-            "agentic ai driven",
-            "llm-driven architecture",
-            "llm driven architecture",
-            "architecture idea factory",
-            "architecture design space exploration",
-            "microarchitecture design space exploration",
-            "computer architecture discovery",
-            "automated architecture discovery",
-            "hardware design agent",
-            "simulator-guided design space exploration",
-        ),
-    ),
-    SectionRule(
-        name="full_stack_codesign",
-        weight=3.5,
-        keywords=(
-            "software hardware co-design",
-            "hardware software co-optimization",
-            "full-stack co-design",
-            "compiler architecture co-design",
-            "isa extension",
-            "risc-v custom extension",
-            "accelerator compiler",
-            "domain-specific accelerator",
-            "domain specific accelerator",
-            "workload mapping",
-            "hardware-aware",
-            "mlir",
-            "circt",
-            "tvm",
-            "triton",
-            "xla",
-        ),
-    ),
-    SectionRule(
-        name="microarchitecture_simulators",
-        weight=3.0,
-        keywords=(
-            "microarchitecture",
-            "cache replacement",
-            "data prefetcher",
-            "branch predictor",
-            "cycle-accurate simulation",
-            "cycle accurate simulation",
-            "cache hierarchy",
-            "cache coherence",
-            "memory hierarchy",
-            "warp scheduling",
-            "simt",
-            "gem5",
-            "champsim",
-            "sniper",
-            "sst",
-            "gpgpu-sim",
-            "accel-sim",
-            "ramulator",
-        ),
-    ),
-    SectionRule(
-        name="hpc_cross_over",
-        weight=2.0,
-        keywords=(
-            "high performance computing",
-            "hpc",
-            "exascale",
-            "mpi",
-            "openmp",
-            "cuda",
-            "rocm",
-            "sycl",
-            "kokkos",
-            "performance portability",
-            "roofline",
-            "numa",
-            "communication-avoiding",
-            "sparse linear algebra",
-            "memory bandwidth",
-            "interconnect",
-        ),
-    ),
-)
-
-GENERIC_AI_AGENT_NOISE = (
-    "rag agent",
-    "web task",
-    "browser task",
-    "multi-agent software framework",
-    "software framework",
-    "retrieval augmented generation",
-    "tool use",
-)
-
-NAS_NOISE = ("neural architecture search", " nas ")
-NAS_RECOVERY_TERMS = (
-    "hardware-aware",
-    "hardware aware",
-    "accelerator",
-    "fpga",
-    "compiler",
-    "co-design",
-    "codesign",
-    "risc-v",
-)
+@dataclass(frozen=True)
+class NegativeRule:
+    id: str
+    penalty: float
+    keywords: tuple[str, ...]
+    recovery_keywords: tuple[str, ...] = field(default_factory=tuple)
 
 
-def classify_paper(paper: Paper) -> Classification:
+@dataclass(frozen=True)
+class InterestProfile:
+    name: str
+    core_categories: frozenset[str]
+    expansion_categories: frozenset[str]
+    sections: tuple[SectionRule, ...]
+    negative_rules: tuple[NegativeRule, ...] = field(default_factory=tuple)
+    expansion_accept_score: float = 4.0
+
+    @property
+    def section_labels(self) -> dict[str, str]:
+        return {section.id: section.label for section in self.sections}
+
+
+def load_interest_profile(path: str | Path = DEFAULT_PROFILE_PATH) -> InterestProfile:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    sections = tuple(
+        SectionRule(
+            id=str(item["id"]),
+            label=str(item.get("label", item["id"])),
+            weight=float(item.get("weight", 1.0)),
+            keywords=tuple(str(keyword) for keyword in item.get("keywords", [])),
+        )
+        for item in payload.get("sections", [])
+    )
+    negative_rules = tuple(
+        NegativeRule(
+            id=str(item["id"]),
+            penalty=float(item.get("penalty", 1.0)),
+            keywords=tuple(str(keyword) for keyword in item.get("keywords", [])),
+            recovery_keywords=tuple(str(keyword) for keyword in item.get("recovery_keywords", [])),
+        )
+        for item in payload.get("negative_rules", [])
+    )
+    return InterestProfile(
+        name=str(payload.get("name", "Daily arXiv Recommender")),
+        core_categories=frozenset(str(item) for item in payload.get("core_categories", [])),
+        expansion_categories=frozenset(str(item) for item in payload.get("expansion_categories", [])),
+        sections=sections,
+        negative_rules=negative_rules,
+        expansion_accept_score=float(payload.get("expansion_accept_score", 4.0)),
+    )
+
+
+def classify_paper(paper: Paper, profile: InterestProfile | None = None) -> Classification:
+    resolved_profile = profile or load_interest_profile()
     text = _paper_text(paper)
     positive_matches: list[str] = []
     negative_matches: list[str] = []
     section_scores: dict[str, float] = {}
 
-    for rule in SECTION_RULES:
+    for rule in resolved_profile.sections:
         matches = _matching_keywords(text, rule.keywords)
         if not matches:
             continue
-        section_scores[rule.name] = len(matches) * rule.weight
-        positive_matches.extend(f"{rule.name}:{match}" for match in matches)
+        section_scores[rule.id] = len(matches) * rule.weight
+        positive_matches.extend(f"{rule.id}:{match}" for match in matches)
 
     score = sum(section_scores.values())
 
-    if _contains_any(text, GENERIC_AI_AGENT_NOISE):
-        negative_matches.append("generic-ai-agent-noise")
-        score -= 6.0
-
-    if _contains_nas_noise(text) and not _contains_any(text, NAS_RECOVERY_TERMS):
-        negative_matches.append("generic-nas-noise")
-        score -= 5.0
+    for rule in resolved_profile.negative_rules:
+        if _negative_rule_matches(text, rule):
+            negative_matches.append(rule.id)
+            score -= rule.penalty
 
     categories = set(paper.categories)
-    in_core_category = bool(categories & CORE_CATEGORIES)
-    in_expansion_category = bool(categories & EXPANSION_CATEGORIES)
+    in_core_category = bool(categories & resolved_profile.core_categories)
+    in_expansion_category = bool(categories & resolved_profile.expansion_categories)
     sections = tuple(
         name for name, value in sorted(section_scores.items(), key=lambda item: (-item[1], item[0]))
     )
@@ -181,7 +121,7 @@ def classify_paper(paper: Paper) -> Classification:
     accepted = False
     if score > 0 and in_core_category:
         accepted = True
-    elif score >= 4.0 and in_expansion_category and "generic-ai-agent-noise" not in negative_matches:
+    elif score >= resolved_profile.expansion_accept_score and in_expansion_category and score > 0:
         accepted = True
 
     return Classification(
@@ -194,8 +134,11 @@ def classify_paper(paper: Paper) -> Classification:
     )
 
 
-def rank_papers(papers: list[Paper]) -> list[Classification]:
-    accepted = [result for result in (classify_paper(paper) for paper in papers) if result.accepted]
+def rank_papers(papers: list[Paper], profile: InterestProfile | None = None) -> list[Classification]:
+    resolved_profile = profile or load_interest_profile()
+    accepted = [
+        result for result in (classify_paper(paper, profile=resolved_profile) for paper in papers) if result.accepted
+    ]
     return sorted(accepted, key=lambda result: (-result.score, result.paper.paper_id))
 
 
@@ -208,13 +151,27 @@ def _normalize(value: str) -> str:
 
 
 def _matching_keywords(text: str, keywords: tuple[str, ...]) -> list[str]:
-    return [keyword for keyword in keywords if keyword.lower() in text]
+    return [keyword for keyword in keywords if _keyword_matches(text, keyword)]
 
 
 def _contains_any(text: str, keywords: tuple[str, ...]) -> bool:
-    return any(keyword.lower() in text for keyword in keywords)
+    return any(_keyword_matches(text, keyword) for keyword in keywords)
 
 
-def _contains_nas_noise(text: str) -> bool:
-    return "neural architecture search" in text or re.search(r"\bnas\b", text) is not None
+def _negative_rule_matches(text: str, rule: NegativeRule) -> bool:
+    if not _contains_any(text, rule.keywords):
+        return False
+    return not _contains_any(text, rule.recovery_keywords)
 
+
+def _keyword_matches(text: str, keyword: str) -> bool:
+    normalized_keyword = _normalize(keyword)
+    if not normalized_keyword:
+        return False
+    if _needs_word_boundary(normalized_keyword):
+        return re.search(rf"\b{re.escape(normalized_keyword)}\b", text) is not None
+    return normalized_keyword in text
+
+
+def _needs_word_boundary(keyword: str) -> bool:
+    return bool(re.fullmatch(r"[a-z0-9][a-z0-9.+#-]{0,4}", keyword))

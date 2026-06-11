@@ -1,6 +1,6 @@
-# Agentic Architecture Paper Recommender
+# Daily arXiv Recommender
 
-Personal daily paper recommender for agentic computer architecture, architecture design space exploration, full-stack hardware/software co-design, CPU/GPU microarchitecture, simulators, and HPC cross-over work.
+Configurable daily arXiv recommender with GitHub Pages publishing, email digests, and feedback hooks.
 
 The target deployment model is serverless:
 
@@ -11,16 +11,22 @@ The target deployment model is serverless:
 
 The current repository starts with a self-contained MVP while upstream `daily-arXiv-ai-enhanced` integration is pending network availability.
 
-## Initial Focus
+## Interest Profile
 
-- arXiv core categories: `cs.AR`, `cs.PF`, `cs.DC`, `cs.PL`
-- arXiv expansion categories: `cs.AI`, `cs.LG`, filtered through a domain gate
-- Recommendation sections:
-  - Agentic Architecture / Auto-DSE
-  - Full-stack HW/SW Co-design
-  - CPU/GPU Microarchitecture and Simulators
-  - HPC x Architecture / Compiler / Runtime
-  - Exploratory but Maybe Relevant
+The active keyword/category profile lives in:
+
+`config/interests.json`
+
+Edit that file to change the recommender's domain without touching Python code. The initial profile is seeded for agentic computer architecture, full-stack hardware/software co-design, CPU/GPU microarchitecture, simulators, and HPC cross-over work.
+
+The profile controls:
+
+- arXiv core categories
+- arXiv expansion categories
+- recommendation sections and display labels
+- weighted keywords
+- negative/noise rules
+- recovery terms for ambiguous topics
 
 ## Development
 
@@ -30,3 +36,11 @@ Run tests:
 python3 -m unittest discover -s tests
 ```
 
+Build recommendations from JSONL:
+
+```bash
+python3 -m paper_recommender.pipeline \
+  --input examples/sample_papers.jsonl \
+  --profile config/interests.json \
+  --output site/recommendations.json
+```
