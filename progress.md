@@ -34,6 +34,8 @@
 | 推荐内核测试 | `python3 -m unittest discover -s tests` | 测试通过 | 15 个测试通过 | pass |
 | 推荐 JSON 生成 | `python3 -m paper_recommender.pipeline --input examples/sample_papers.jsonl --profile config/interests.json --output site/recommendations.json --run-date 2026-06-12 --limit 25` | 生成推荐 JSON | 写入 2 条推荐 | pass |
 | Supabase schema 测试 | `python3 -m unittest tests.test_supabase_schema` | 测试通过 | schema 契约测试通过 | pass |
+| 反馈读取与排序测试 | `python3 -m unittest discover -s tests` | 测试通过 | 20 个测试通过 | pass |
+| 带反馈生成推荐 JSON | `python3 -m paper_recommender.pipeline --input examples/sample_papers.jsonl --profile config/interests.json --feedback examples/sample_feedback.json --output site/recommendations.json --run-date 2026-06-12 --limit 25` | 生成带 feedback summary 的推荐 JSON | 写入 2 条推荐，包含 `agentic_architecture: 1.0` 权重 | pass |
 
 ## 错误日志
 | 时间戳 | 错误 | 尝试次数 | 解决方案 |
@@ -76,6 +78,27 @@
 - 创建/修改的文件：
   - `supabase/schema.sql`
   - `tests/test_supabase_schema.py`
+
+## 会话补充：反馈读取与推荐调整
+- **状态：** complete
+- 执行的操作：
+  - 增加 `paper_recommender.feedback`，支持从 Supabase REST 读取反馈并写入 JSON。
+  - 增加反馈 JSON 解析和 section 权重汇总。
+  - pipeline 增加 `--feedback` 参数，并用 section feedback weights 调整推荐排序。
+  - GitHub Actions 增加条件步骤：配置 `SUPABASE_URL` 和 `SUPABASE_SERVICE_ROLE_KEY` 后自动拉取反馈。
+  - 页面和邮件反馈链接增加 `section` 参数，便于后续按栏目学习。
+  - README 增加 Supabase 配置说明。
+- 创建/修改的文件：
+  - `paper_recommender/feedback.py`
+  - `paper_recommender/pipeline.py`
+  - `paper_recommender/emailer.py`
+  - `tests/test_feedback.py`
+  - `tests/test_feedback_pipeline.py`
+  - `examples/sample_feedback.json`
+  - `.github/workflows/daily.yml`
+  - `README.md`
+  - `site/app.js`
+  - `site/feedback.js`
 
 ### 当前仓库命名状态
 - 本地路径：`/Users/foreverhyx/daily-arxiv-recommender`

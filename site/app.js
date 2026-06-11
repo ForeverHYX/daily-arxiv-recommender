@@ -33,8 +33,9 @@ function render(payload) {
 
 function renderPaper(paper) {
   const feedbackBase = "feedback.html";
-  const likeUrl = `${feedbackBase}?paper_id=${encodeURIComponent(paper.paper_id)}&rating=like&source=page`;
-  const dislikeUrl = `${feedbackBase}?paper_id=${encodeURIComponent(paper.paper_id)}&rating=dislike&source=page`;
+  const section = paper.sections?.[0] || "";
+  const likeUrl = `${feedbackBase}?paper_id=${encodeURIComponent(paper.paper_id)}&rating=like&source=page&section=${encodeURIComponent(section)}`;
+  const dislikeUrl = `${feedbackBase}?paper_id=${encodeURIComponent(paper.paper_id)}&rating=dislike&source=page&section=${encodeURIComponent(section)}`;
   const authors = Array.isArray(paper.authors) ? paper.authors.join(", ") : "";
   const categories = Array.isArray(paper.categories) ? paper.categories.join(", ") : "";
   return `

@@ -34,6 +34,7 @@ async function recordFeedback() {
       paper_id: paperId,
       rating,
       source,
+      section: params.get("section") || null,
     }),
   });
 
@@ -44,4 +45,3 @@ async function recordFeedback() {
   titleEl.textContent = "Feedback recorded";
   detailEl.textContent = `Recorded ${rating} for ${paperId}.`;
 }
-

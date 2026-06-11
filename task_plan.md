@@ -112,7 +112,7 @@
 - [ ] 创建 Supabase 项目。
 - [x] 设计 `recommendation_runs`、`feedback_events`、`profile_state` 表。
 - [x] 配置 RLS：前端只允许插入反馈，不允许读取、更新、删除敏感数据。
-- [ ] 在 GitHub Actions 中使用服务密钥读取反馈。
+- [x] 在 GitHub Actions 中使用服务密钥读取反馈。
 - [ ] 记录滥用风险和后续加固方案。
 - **状态：** in_progress
 
@@ -132,12 +132,13 @@
 - **状态：** in_progress
 
 ### 阶段 7：推荐学习闭环
-- [ ] 将喜欢/不喜欢反馈转换为兴趣画像。
+- [x] 将喜欢/不喜欢反馈转换为 section 权重。
 - [ ] 实现 embedding 或 TF-IDF fallback。
-- [ ] 调整不同栏目、作者、关键词和工具链权重。
+- [x] 调整不同栏目权重。
+- [ ] 调整作者、关键词和工具链权重。
 - [ ] 记录推荐历史，避免重复推荐。
 - [ ] 加入简单评估指标：打开率、反馈率、喜欢率、负反馈主题。
-- **状态：** pending
+- **状态：** in_progress
 
 ### 阶段 8：验证与上线
 - [ ] 本地或 GitHub Actions 手动运行一次完整流程。

@@ -7,6 +7,11 @@
     "microarchitecture_simulators": "CPU/GPU Microarchitecture and Simulators",
     "hpc_cross_over": "HPC x Architecture / Compiler / Runtime"
   },
+  "feedback_summary": {
+    "section_weights": {
+      "agentic_architecture": 1.0
+    }
+  },
   "count": 2,
   "recommendations": [
     {
@@ -21,7 +26,7 @@
         "cs.AI",
         "cs.AR"
       ],
-      "score": 35.0,
+      "score": 36.0,
       "sections": [
         "agentic_architecture",
         "microarchitecture_simulators"

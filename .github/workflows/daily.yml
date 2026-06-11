@@ -17,6 +17,7 @@ concurrency:
 env:
   SITE_BASE_URL: https://foreverhyx.github.io/daily-arxiv-recommender
   HAS_SMTP: ${{ secrets.SMTP_HOST != '' && secrets.SMTP_PASSWORD != '' && secrets.EMAIL_SENDER != '' && secrets.EMAIL_RECEIVER != '' }}
+  HAS_SUPABASE: ${{ vars.SUPABASE_URL != '' && secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}
 
 jobs:
   build:
@@ -31,11 +32,24 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests
 
+      - name: Initialize feedback file
+        run: |
+          mkdir -p output
+          echo '[]' > output/feedback.json
+
+      - name: Fetch Supabase feedback
+        if: env.HAS_SUPABASE == 'true'
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python -m paper_recommender.feedback --output output/feedback.json --limit 500
+
       - name: Build recommendation payload
         run: |
           python -m paper_recommender.pipeline \
             --input examples/sample_papers.jsonl \
             --profile config/interests.json \
+            --feedback output/feedback.json \
             --output site/recommendations.json \
             --run-date "$(date -u +%F)" \
             --limit 25

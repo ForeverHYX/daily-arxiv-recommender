@@ -61,8 +61,9 @@ def _render_recommendation_item(
     score = escape(str(item.get("score", "")))
 
     page_url = f"{site_base_url.rstrip('/')}/?paper_id={urlencode({'': paper_id})[1:]}"
-    like_url = _feedback_url(feedback_base_url, paper_id, "like")
-    dislike_url = _feedback_url(feedback_base_url, paper_id, "dislike")
+    primary_section = str((item.get("sections") or [""])[0])
+    like_url = _feedback_url(feedback_base_url, paper_id, "like", primary_section)
+    dislike_url = _feedback_url(feedback_base_url, paper_id, "dislike", primary_section)
 
     return f"""
       <li style="margin-bottom: 20px;">
@@ -79,5 +80,5 @@ def _render_recommendation_item(
     """
 
 
-def _feedback_url(base_url: str, paper_id: str, rating: str) -> str:
-    return f"{base_url}?{urlencode({'paper_id': paper_id, 'rating': rating, 'source': 'email'})}"
+def _feedback_url(base_url: str, paper_id: str, rating: str, section: str) -> str:
+    return f"{base_url}?{urlencode({'paper_id': paper_id, 'rating': rating, 'source': 'email', 'section': section})}"

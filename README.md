@@ -42,5 +42,15 @@ Build recommendations from JSONL:
 python3 -m paper_recommender.pipeline \
   --input examples/sample_papers.jsonl \
   --profile config/interests.json \
+  --feedback examples/sample_feedback.json \
   --output site/recommendations.json
 ```
+
+## Feedback Storage
+
+Run [supabase/schema.sql](supabase/schema.sql) in your Supabase SQL editor, then configure:
+
+- GitHub Variables: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+- GitHub Secrets: `SUPABASE_SERVICE_ROLE_KEY`
+
+The public Pages app uses the anon key only to insert feedback. GitHub Actions uses the service role key to read feedback and adjust section weights.
